@@ -1,20 +1,380 @@
 
+/* ---------- Base ---------- */
+
+:root {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  color: #f1f2eb;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
 * {
   box-sizing: border-box;
 }
 
-html, body, #root {
-  margin: 0;
+html,
+body,
+#root {
   width: 100%;
   height: 100%;
+  margin: 0;
 }
 
-.viewer {
+button {
+  font: inherit;
+}
+
+/* ---------- Main scene ---------- */
+
+.showcase {
+  position: relative;
   width: 100%;
   height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+
   background: radial-gradient(
-    circle at center,
-    #314438,
-    #15221e
+    ellipse at 53% 47%,
+    #2e4638 0%,
+    #1c3027 55%,
+    #10231c 100%
   );
+}
+
+.scene {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+}
+
+/* ---------- Interface overlay ---------- */
+
+.interface {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+
+  /* Allow mouse input to reach the 3D canvas */
+  pointer-events: none;
+}
+
+.interface button {
+  pointer-events: auto;
+}
+
+/* ---------- Shared styles ---------- */
+
+.accent-line {
+  display: inline-block;
+  width: 55px;
+  height: 2px;
+  background: linear-gradient(
+    to right,
+    #9fc58c,
+    transparent
+  );
+}
+
+.small-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 600;
+  letter-spacing: 2px;
+  color: #a8b9ad;
+}
+
+.glass {
+  background: rgba(225, 245, 225, 0.055);
+
+  backdrop-filter: blur(20px) saturate(135%);
+  -webkit-backdrop-filter: blur(20px) saturate(135%);
+
+  border: 1px solid rgba(235, 255, 235, 0.17);
+  border-radius: 18px;
+
+  box-shadow:
+    0 12px 45px rgba(0, 0, 0, 0.1),
+    inset 0 1px rgba(255, 255, 255, 0.035);
+}
+
+/* ---------- Top-left title ---------- */
+
+.site-header {
+  position: absolute;
+  top: 7%;
+  left: 4%;
+}
+
+.eyebrow {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+
+  font-size: 14px;
+  letter-spacing: 0.4px;
+}
+
+.site-header h1 {
+  margin: 17px 0 5px;
+
+  font-size: clamp(30px, 3vw, 52px);
+  font-weight: 400;
+  letter-spacing: -1.5px;
+  line-height: 1.15;
+}
+
+.site-header p {
+  margin: 0;
+  font-size: 16px;
+  color: #b0bcb2;
+}
+
+/* ---------- Top-right prototype label ---------- */
+
+.prototype-label {
+  position: absolute;
+  top: 7%;
+  right: 4%;
+
+  display: flex;
+  align-items: center;
+  gap: 22px;
+
+  padding: 16px 25px;
+
+  background: rgba(225, 245, 225, 0.055);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border: 1px solid rgba(235, 255, 235, 0.17);
+  border-radius: 14px;
+}
+
+.prototype-symbol {
+  font-size: 32px;
+  line-height: 1;
+  color: #c5d5c6;
+}
+
+.prototype-label p {
+  margin: 7px 0 0;
+  font-size: 17px;
+  font-weight: 400;
+}
+
+/* ---------- Left-side navigation ---------- */
+
+.feature-navigation {
+  position: absolute;
+  top: 43%;
+  left: 4%;
+
+  display: flex;
+  flex-direction: column;
+  width: 275px;
+}
+
+.nav-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 24px;
+
+  width: 100%;
+  min-height: 57px;
+  padding: 0 20px;
+
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid rgba(235, 255, 235, 0.14);
+
+  text-align: left;
+  font-size: 17px;
+  color: #e5ebe3;
+
+  cursor: pointer;
+  transition:
+    background 0.3s ease,
+    color 0.3s ease;
+}
+
+.nav-number {
+  color: #a7b5aa;
+  font-size: 15px;
+}
+
+.nav-button:hover {
+  background: rgba(235, 255, 235, 0.07);
+}
+
+.nav-button.active {
+  background: rgba(205, 240, 200, 0.12);
+  border-bottom-color: transparent;
+  border-radius: 9px;
+  color: #ffffff;
+}
+
+.nav-button.active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+
+  width: 3px;
+  border-radius: 3px;
+  background: #a3ce8e;
+}
+
+/* ---------- Bottom-right info panel ---------- */
+
+.info-panel {
+  position: absolute;
+  right: 4%;
+  bottom: 9%;
+
+  width: 340px;
+  padding: 27px 29px;
+
+  animation: panel-appear 0.4s ease both;
+}
+
+.info-heading {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.info-heading h2 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 400;
+}
+
+.info-heading .accent-line {
+  flex: 1;
+}
+
+.info-panel p {
+  margin: 20px 0 0;
+
+  color: #c6d1c7;
+  font-size: 15px;
+  line-height: 1.75;
+}
+
+/* ---------- Mouse interaction hint ---------- */
+
+.interaction-hint {
+  position: absolute;
+  bottom: 9%;
+  left: 4%;
+
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  font-size: 13px;
+  color: #b0beb2;
+}
+
+.mouse-icon {
+  position: relative;
+  display: inline-block;
+
+  width: 19px;
+  height: 29px;
+
+  border: 1.5px solid #c0d0c3;
+  border-radius: 11px;
+}
+
+.mouse-icon::before {
+  content: '';
+  position: absolute;
+  top: 6px;
+  left: 50%;
+
+  width: 2px;
+  height: 6px;
+  border-radius: 2px;
+  background: #c0d0c3;
+
+  transform: translateX(-50%);
+}
+
+/* ---------- UI animation ---------- */
+
+@keyframes panel-appear {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------- Smaller screens ---------- */
+
+@media (max-width: 900px) {
+  .site-header {
+    top: 25px;
+    left: 25px;
+  }
+
+  .site-header h1 {
+    font-size: 28px;
+  }
+
+  .site-header p {
+    font-size: 12px;
+  }
+
+  .prototype-label {
+    top: 115px;
+    right: 25px;
+    padding: 10px 14px;
+  }
+
+  .feature-navigation {
+    top: auto;
+    bottom: 25px;
+    left: 25px;
+    right: 25px;
+
+    width: auto;
+    flex-direction: row;
+    overflow-x: auto;
+  }
+
+  .nav-button {
+    flex: 0 0 auto;
+    width: auto;
+    min-height: 45px;
+    padding: 0 12px;
+    gap: 8px;
+    font-size: 13px;
+  }
+
+  .info-panel {
+    bottom: 90px;
+    right: 25px;
+    width: min(320px, 75vw);
+    padding: 18px;
+  }
+
+  .info-heading h2 {
+    font-size: 20px;
+  }
+
+  .info-panel p {
+    font-size: 12px;
+  }
+
+  .interaction-hint {
+    display: none;
+  }
 }
