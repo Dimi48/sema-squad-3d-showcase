@@ -1,5 +1,5 @@
 
-/* ---------- Base ---------- */
+/* ---------- BASE ---------- */
 
 :root {
   font-family: 'Segoe UI', Arial, sans-serif;
@@ -24,7 +24,7 @@ button {
   font: inherit;
 }
 
-/* ---------- Main scene ---------- */
+/* ---------- MAIN SCENE ---------- */
 
 .showcase {
   position: relative;
@@ -47,14 +47,14 @@ button {
   z-index: 1;
 }
 
-/* ---------- Interface overlay ---------- */
+/* ---------- INTERFACE OVERLAY ---------- */
 
 .interface {
   position: absolute;
   inset: 0;
   z-index: 2;
 
-  /* Allow mouse input to reach the 3D canvas */
+  /* Allow dragging the 3D model through empty UI areas */
   pointer-events: none;
 }
 
@@ -62,7 +62,7 @@ button {
   pointer-events: auto;
 }
 
-/* ---------- Shared styles ---------- */
+/* ---------- SHARED STYLES ---------- */
 
 .accent-line {
   display: inline-block;
@@ -97,7 +97,7 @@ button {
     inset 0 1px rgba(255, 255, 255, 0.035);
 }
 
-/* ---------- Top-left title ---------- */
+/* ---------- TOP-LEFT TITLE ---------- */
 
 .site-header {
   position: absolute;
@@ -129,7 +129,7 @@ button {
   color: #b0bcb2;
 }
 
-/* ---------- Top-right prototype label ---------- */
+/* ---------- TOP-RIGHT PROTOTYPE LABEL ---------- */
 
 .prototype-label {
   position: absolute;
@@ -162,7 +162,7 @@ button {
   font-weight: 400;
 }
 
-/* ---------- Left-side navigation ---------- */
+/* ---------- LEFT-SIDE NAVIGATION ---------- */
 
 .feature-navigation {
   position: absolute;
@@ -193,6 +193,7 @@ button {
   color: #e5ebe3;
 
   cursor: pointer;
+
   transition:
     background 0.3s ease,
     color 0.3s ease;
@@ -226,7 +227,7 @@ button {
   background: #a3ce8e;
 }
 
-/* ---------- Bottom-right info panel ---------- */
+/* ---------- BOTTOM-RIGHT INFO PANEL ---------- */
 
 .info-panel {
   position: absolute;
@@ -263,7 +264,7 @@ button {
   line-height: 1.75;
 }
 
-/* ---------- Mouse interaction hint ---------- */
+/* ---------- BOTTOM-LEFT INTERACTION HINT ---------- */
 
 .interaction-hint {
   position: absolute;
@@ -303,7 +304,7 @@ button {
   transform: translateX(-50%);
 }
 
-/* ---------- UI animation ---------- */
+/* ---------- UI ANIMATION ---------- */
 
 @keyframes panel-appear {
   from {
@@ -317,7 +318,39 @@ button {
   }
 }
 
-/* ---------- Smaller screens ---------- */
+/* ---------- TEMPORARY CAMERA EDITOR ---------- */
+
+.capture-camera {
+  position: absolute;
+  top: 25px;
+  left: 50%;
+  z-index: 10;
+
+  transform: translateX(-50%);
+
+  padding: 12px 22px;
+
+  background: rgba(180, 225, 180, 0.13);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+
+  border: 1px solid rgba(200, 255, 200, 0.25);
+  border-radius: 10px;
+
+  color: #f1f2eb;
+  font-size: 14px;
+
+  cursor: pointer;
+  pointer-events: auto;
+
+  transition: background 0.2s ease;
+}
+
+.capture-camera:hover {
+  background: rgba(180, 225, 180, 0.23);
+}
+
+/* ---------- SMALLER SCREENS ---------- */
 
 @media (max-width: 900px) {
   .site-header {
@@ -376,5 +409,15 @@ button {
 
   .interaction-hint {
     display: none;
+  }
+
+  .capture-camera {
+    top: 15px;
+    left: auto;
+    right: 15px;
+    transform: none;
+
+    padding: 9px 12px;
+    font-size: 12px;
   }
 }

@@ -1,10 +1,12 @@
 
-import { useState } from 'react'
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls, useGLTF } from '@react-three/drei'
+import { useState, useRef, useEffect } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { CameraControls, useGLTF } from '@react-three/drei'
 
-// Each feature has its own name and description.
-// Tomorrow, we'll add camera positions here too.
+// -----------------------------------------
+// FEATURE DATA
+// -----------------------------------------
+
 const features = [
   {
     id: 'overview',
@@ -43,26 +45,138 @@ const features = [
   }
 ]
 
+// -----------------------------------------
+// CAMERA PRESETS
+// Your five manually captured positions
+// -----------------------------------------
+
+const cameraPresets = {
+  overview: {
+    position: [3.713, 2.244, 5.132],
+    target: [0, 1.2, 0]
+  },
+  bench: {
+    position: [5.129, 1.591, 2.667],
+    target: [0, 1.2, 0]
+  },
+  sensor: {
+    position: [0.865, 1.354, 1.678],
+    target: [0, 1.2, 0]
+  },
+  habitat: {
+    position: [-1.961, 3.27, 1.629],
+    target: [0, 1.2, 0]
+  },
+  canopy: {
+    position: [1.168, 3.183, -4.175],
+    target: [0, 1.2, 0]
+  }
+}
+
+// -----------------------------------------
+// 3D PAVILION + FLOATING ANIMATION
+// -----------------------------------------
+
 function Pavilion() {
   const { scene } = useGLTF('/models/SemaModel.glb')
+  const group = useRef(null)
 
-  return <primitive object={scene} />
+  useFrame((state) => {
+    if (!group.current) return
+
+    const time = state.clock.elapsedTime
+
+    group.current.position.y =
+      Math.sin(time * 0.8) * 0.08
+  })
+
+  return (
+    <group ref={group}>
+      <primitive object={scene} />
+    </group>
+  )
 }
+
+// -----------------------------------------
+// CAMERA CONTROLLER
+// -----------------------------------------
+
+function CameraRig({ controlsRef }) {
+  useEffect(() => {
+    const controls = controlsRef.current
+
+    if (!controls) return
+
+    const preset = cameraPresets.overview
+
+    // Start at our chosen overview position
+    controls.setLookAt(
+      ...preset.position,
+      ...preset.target,
+      false
+    )
+  }, [controlsRef])
+
+  return (
+    <CameraControls
+      ref={controlsRef}
+      makeDefault
+      smoothTime={0.9}
+    />
+  )
+}
+
+// -----------------------------------------
+// MAIN APPLICATION
+// -----------------------------------------
 
 function App() {
   const [activeId, setActiveId] = useState('overview')
+  const cameraControlsRef = useRef(null)
 
   const activeFeature = features.find(
     (feature) => feature.id === activeId
   )
 
+  // ---------------------------------------
+  // CAMERA NAVIGATION
+  // ---------------------------------------
+
+  const moveToFeature = (featureId) => {
+    // Update the interface
+    setActiveId(featureId)
+
+    // Find the camera preset
+    const preset = cameraPresets[featureId]
+    const controls = cameraControlsRef.current
+
+    if (!preset || !controls) return
+
+    // Smoothly animate to the selected view
+    controls.setLookAt(
+      ...preset.position,
+      ...preset.target,
+      true
+    )
+  }
+
+  // ---------------------------------------
+  // APPLICATION LAYOUT
+  // ---------------------------------------
+
   return (
     <main className="showcase">
 
-      {/* Our existing 3D scene */}
+      {/* 3D SCENE */}
       <div className="scene">
-        <Canvas camera={{ position: [5, 3.5, 6], fov: 45 }}>
+        <Canvas
+          camera={{
+            position: cameraPresets.overview.position,
+            fov: 45
+          }}
+        >
           <ambientLight intensity={1.5} />
+
           <directionalLight
             position={[5, 8, 5]}
             intensity={2}
@@ -70,14 +184,14 @@ function App() {
 
           <Pavilion />
 
-          <OrbitControls target={[0, 1.2, 0]} />
+          <CameraRig controlsRef={cameraControlsRef} />
         </Canvas>
       </div>
 
-      {/* Interface above the 3D scene */}
+      {/* USER INTERFACE */}
       <div className="interface">
 
-        {/* Top-left identity */}
+        {/* TOP-LEFT TITLE */}
         <header className="site-header">
           <div className="eyebrow">
             <span>TU/e · SeMa Squad</span>
@@ -88,7 +202,7 @@ function App() {
           <p>Interactive Prototype Showcase</p>
         </header>
 
-        {/* Top-right prototype label */}
+        {/* TOP-RIGHT PROTOTYPE LABEL */}
         <div className="prototype-label">
           <span className="prototype-symbol">◇</span>
 
@@ -100,8 +214,11 @@ function App() {
           </div>
         </div>
 
-        {/* Feature navigation */}
-        <nav className="feature-navigation" aria-label="Explore features">
+        {/* FEATURE NAVIGATION */}
+        <nav
+          className="feature-navigation"
+          aria-label="Explore features"
+        >
           {features.map((feature) => (
             <button
               key={feature.id}
@@ -110,17 +227,18 @@ function App() {
                 activeId === feature.id ? 'active' : ''
               }`}
               aria-pressed={activeId === feature.id}
-              onClick={() => setActiveId(feature.id)}
+              onClick={() => moveToFeature(feature.id)}
             >
               <span className="nav-number">
                 {feature.number}
               </span>
+
               <span>{feature.label}</span>
             </button>
           ))}
         </nav>
 
-        {/* Changing information panel */}
+        {/* DYNAMIC INFORMATION PANEL */}
         <section
           className="info-panel glass"
           aria-live="polite"
@@ -134,7 +252,7 @@ function App() {
           <p>{activeFeature.description}</p>
         </section>
 
-        {/* Bottom-left interaction hint */}
+        {/* BOTTOM-LEFT INTERACTION HINT */}
         <div className="interaction-hint">
           <span className="mouse-icon"></span>
           <span>Drag to explore · Scroll to zoom</span>
